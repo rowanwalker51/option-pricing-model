@@ -43,7 +43,7 @@ class AmericanOption(Option):
 
         return float(V[0].round(4))
 
-    def price_lsm(self, paths=50000, steps=100):
+    def price_lsm(self, paths=10000, steps=100):
         """ LSM Monte Carlo """
         dt = self.T / steps
         disc = np.exp(-self.r * dt)
@@ -64,7 +64,7 @@ class AmericanOption(Option):
             if np.any(itm):
                 X = np.vstack([np.ones(np.sum(itm)), S[itm, t], S[itm, t]**2]).T
                 y = cashflow[itm] * disc
-                coeffs = np.linalg.lstsq(X, y, rcond=None)[0]
+                coeffs = np.linalg.lstsq(X, y)[0]
                 continuation = coeffs[0] + coeffs[1]*S[itm, t] + coeffs[2]*S[itm, t]**2
                 exercise = payoff[itm, t] > continuation
                 cashflow[itm] = np.where(exercise, payoff[itm, t], cashflow[itm]*disc)
